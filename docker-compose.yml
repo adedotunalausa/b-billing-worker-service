@@ -1,0 +1,85 @@
+version: '3.7'
+
+services:
+  rabbitmq:
+    hostname: rabbitmq
+    image: rabbitmq:alpine
+    command: rabbitmq-server
+    container_name: rabbitmq
+    ports:
+      - 5673:5672
+      - 15673:15672
+    # healthcheck:
+    #   test: [ 'CMD', 'nc', '-z', 'localhost', '5672' ]
+    #   interval: 5s
+    #   timeout: 15s
+    #   retries: 1
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - blusalt-app-network
+
+  db:
+    image: postgres
+    container_name: db
+    volumes:
+      - ./docker-postgresql-multiple-databases:/docker-entrypoint-initdb.d
+    restart: always
+    environment:
+      - POSTGRES_USER=adedotun
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_MULTIPLE_DATABASES=customer_db,billing_db
+    ports:
+      - 5433:5432
+    networks:
+      - blusalt-app-network
+
+  customer-service:
+    image: customer-service:0.0.1-SNAPSHOT
+    container_name: customer-service
+    build:
+      context: ./customer-service
+    ports:
+      - "8889:8889"
+    restart: on-failure
+    depends_on:
+      - db
+    env_file:
+      - ./env/application-customer.properties
+    networks:
+      - blusalt-app-network
+
+  billing-service:
+    image: billing-service:0.0.1-SNAPSHOT
+    container_name: billing-service
+    build:
+      context: ./billing-service
+    ports:
+      - "8890:8890"
+    depends_on:
+      - rabbitmq
+      - db
+      - customer-service
+    env_file:
+      - ./env/application-billing.properties
+    restart: on-failure
+    networks:
+      - blusalt-app-network
+
+  billing-worker-service:
+    image: billing-worker-service
+    container_name: billing-worker-service
+    build:
+      context: ./billing-worker-service
+    depends_on:
+      - rabbitmq
+      - billing-service
+    env_file:
+      - ./env/billing-worker.env
+    restart: on-failure
+    networks:
+      - blusalt-app-network
+
+networks:
+  blusalt-app-network:
