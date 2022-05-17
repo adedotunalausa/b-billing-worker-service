@@ -23,12 +23,12 @@ public class WalletEventSender {
     @Value("${queue.fund_wallet_response}")
     private String FUND_WALLET_RESPONSE_QUEUE;
 
-    public void pushFundWalletResponseToQueue(FundWalletResponse fundWalletResponse) {
+    public void pushCompletedFundWalletTransactionToQueue(FundWalletResponse fundWalletResponse) {
 
         Map message = new ObjectMapper().convertValue(fundWalletResponse, Map.class);
         rabbitMessagingTemplate.setMessageConverter(messageConverter);
         rabbitMessagingTemplate.convertAndSend(FUND_WALLET_RESPONSE_QUEUE, message);
-        log.info("pushed new transaction request: {} to queue", message);
+        log.info("pushed completed fund wallet transaction: {} to queue", message);
     }
 
 }

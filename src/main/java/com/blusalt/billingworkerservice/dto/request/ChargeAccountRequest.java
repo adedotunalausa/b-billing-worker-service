@@ -1,20 +1,20 @@
 package com.blusalt.billingworkerservice.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class FundWalletRequest {
-
+@AllArgsConstructor
+@NoArgsConstructor
+public class ChargeAccountRequest {
     private String customerId;
-
-    private String walletId;
-
     private String amount;
-
+    private String walletId;
     private String currentWalletBalance;
-
     private String newWalletBalance;
-
+    private String transactionStatus;
+    private String transactionId;
 }

@@ -1,6 +1,6 @@
 package com.blusalt.billingworkerservice.event;
 
-import com.blusalt.billingworkerservice.dto.response.FundWalletResponse;
+import com.blusalt.billingworkerservice.dto.request.ChargeAccountRequest;
 import com.blusalt.billingworkerservice.service.TransactionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +23,11 @@ public class WalletEventListener {
         try{
             ObjectMapper objectMapper = new ObjectMapper();
             String rawMessageString = new String(message.getBody());
-            FundWalletResponse requestFromBillingService = objectMapper.readValue(rawMessageString, FundWalletResponse.class);
-            log.info("Fund wallet response for customer: {}", requestFromBillingService.getCustomerId());
+            ChargeAccountRequest requestFromBillingService = objectMapper.readValue(rawMessageString, ChargeAccountRequest.class);
+            log.info("Charge account request for customer: {}", requestFromBillingService.getCustomerId());
             transactionService.processFundWalletTransaction(requestFromBillingService);
         } catch (Exception exception) {
-            log.error("There was an error in fund wallet response listener: {}", exception.getMessage());
+            log.error("There was an error in charge account listener: {}", exception.getMessage());
             exception.printStackTrace();
         }
     }

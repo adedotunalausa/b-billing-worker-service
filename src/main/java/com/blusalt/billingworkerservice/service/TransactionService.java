@@ -1,7 +1,7 @@
 package com.blusalt.billingworkerservice.service;
 
-import com.blusalt.billingworkerservice.dto.response.FundWalletResponse;
+import com.blusalt.billingworkerservice.dto.request.ChargeAccountRequest;
 
 public interface TransactionService {
-    void processFundWalletTransaction(FundWalletResponse requestFromBillingService);
+    void processFundWalletTransaction(ChargeAccountRequest requestFromBillingService);
 }
